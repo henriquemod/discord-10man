@@ -3,6 +3,7 @@
     "bot_IP": "",
     "bot_port": 3000,
     "steam_web_API_key": "123ABDKLK12938712938SBDDS1723987",
+    "coach": 0 = No / 1 = Yes,
     "servers": [
         {
             "server_address": "csgo.yannickgloster.com",

@@ -270,14 +270,14 @@ class CSGO(commands.Cog):
 
         if ctx.author.voice.channel.category is None:
             team1_channel = await ctx.guild.create_voice_channel(name=f'team_{team1_captain.display_name}',
-                                                                 user_limit=int(self.bot.match_size / 2) + 1)
+                                                                 user_limit=int(self.bot.match_size / 2) + self.bot.coach)
             team2_channel = await ctx.guild.create_voice_channel(name=f'team_{team2_captain.display_name}',
-                                                                 user_limit=int(self.bot.match_size / 2) + 1)
+                                                                 user_limit=int(self.bot.match_size / 2) + self.bot.coach)
         else:
             team1_channel = await ctx.author.voice.channel.category.create_voice_channel(
-                name=f'team_{team1_captain.display_name}', user_limit=int(self.bot.match_size / 2) + 1)
+                name=f'team_{team1_captain.display_name}', user_limit=int(self.bot.match_size / 2) + self.bot.coach)
             team2_channel = await ctx.author.voice.channel.category.create_voice_channel(
-                name=f'team_{team2_captain.display_name}', user_limit=int(self.bot.match_size / 2) + 1)
+                name=f'team_{team2_captain.display_name}', user_limit=int(self.bot.match_size / 2) + self.bot.coach)
 
         for player in team1:
             await player.move_to(channel=team1_channel, reason=f'You are on {team1_captain}\'s Team')

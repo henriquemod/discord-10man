@@ -35,6 +35,7 @@ class Discord_10man(commands.Bot):
         else:
             self.bot_port: int = 3000
         self.steam_web_api_key = config['steam_web_API_key']
+        self.coach = config['coach']
         self.servers: List[CSGOServer] = []
         # Will need to change for when there is multiple server queue
         self.users_not_ready: List[discord.Member] = []
