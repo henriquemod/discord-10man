@@ -40,7 +40,7 @@ class Discord_10man(commands.Bot):
         self.users_not_ready: List[discord.Member] = []
         for i, server in enumerate(config['servers']):
             self.servers.append(
-                CSGOServer(i, server['server_address'], server['server_port'], server['server_password'],
+                CSGOServer(i, server['server_address'], server['server_alias'], server['server_port'], server['server_password'],
                            server['RCON_password']))
         self.web_server = WebServer(bot=self)
         self.dev: bool = False
