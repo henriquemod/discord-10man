@@ -35,7 +35,8 @@ class Discord_10man(commands.Bot):
         else:
             self.bot_port: int = 3000
         self.steam_web_api_key = config['steam_web_API_key']
-        self.coach = config['coach']
+        self.coach = config['coach'] # added coach feature
+        self.custom_veto_url = config['custom_veto_url'] # added custom imagem URL for vetos
         self.servers: List[CSGOServer] = []
         # Will need to change for when there is multiple server queue
         self.users_not_ready: List[discord.Member] = []

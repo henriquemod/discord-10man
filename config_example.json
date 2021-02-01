@@ -4,6 +4,7 @@
     "bot_port": 3000,
     "steam_web_API_key": "123ABDKLK12938712938SBDDS1723987",
     "coach": 0 = No / 1 = Yes,
+    "custom_veto_url": "URL in case you want to discord use imagens based on a website rathar than a folder, if wont use just leave it blank"
     "servers": [
         {
             "server_address": "csgo.yannickgloster.com",

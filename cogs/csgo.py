@@ -544,7 +544,14 @@ class CSGO(commands.Cog):
                                   color=discord.Colour(0x650309))
             response = await session.get(f'{base_url}/map-veto')
             path = (await response.json())['path']
-            url = base_url + path
+
+            ## Validate if custom_veto_url is filled in json file
+            if self.bot.custom_veto_url:
+                url = self.bot.custom_veto_url
+            else:
+                url = base_url + path
+
+            self.logger.warning(f'url: ' + url)
             embed.set_image(url=url)
             embed.set_footer(text=f'It is now {current_team_captain}\'s turn to veto | You have 60 seconds',
                              icon_url=current_team_captain.avatar_url)
