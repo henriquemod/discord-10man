@@ -118,7 +118,7 @@ class WebServer:
                     score_embed.set_footer(text="🟢 Live")
                     await server.score_message.edit(embed=score_embed)
 
-                if get5_event['event'] == 'series_end' or get5_event['event'] == 'series_cancel' or get5_event['event'] == 'map_end':
+                if get5_event['event'] == 'series_end' or get5_event['event'] == 'series_cancel':
                     if get5_event['event'] == 'series_end':
                         await server.score_message.edit(content='Game Over')
                     elif get5_event['event'] == 'series_cancel':
@@ -149,6 +149,60 @@ class WebServer:
                     await server.channels[2].delete(reason='Game Over')
                     server.make_available()
                     self.csgo_servers.remove(server)
+
+                ## When match ends
+                elif get5_event['event'] == 'map_end':
+                    await server.score_message.edit(content='Game Over')
+
+                    ## Add embed where show map ended
+                    score_embed: discord.Embed = server.score_message.embeds[0]
+                    score_embed.set_footer(text='🟥 Ended')
+                    await server.score_message.edit(embed=score_embed)
+
+                    ## Remove json file from previous match
+                    try:
+                        if os.path.exists(f'./{get5_event["matchid"]}.json'):
+                            os.remove(f'./{get5_event["matchid"]}.json')
+                            self.logger.debug(f'Deleted {get5_event["matchid"]}.json')
+                        else:
+                            self.logger.error(f'Could not delete {get5_event["matchid"]}.json, file does not exist')
+                    except:
+                        self.logger.error(f'Problems trying to delet json file from previous match')
+                        pass
+
+                    ## Move players from custom voice channel to the original voice channels
+                    try:
+                        if self.bot.cogs['CSGO'].pug.enabled:
+                            for player in server.players:
+                                try:
+                                    await player.move_to(channel=server.channels[0], reason=f'Game Over')
+                                except discord.HTTPException:
+                                    traceback.print_exc()
+                                    print(f'Unable to move {player}')
+                    except:
+                        self.logger.error(f'Problems trying to move players from game voice channel to lobby voice channel')
+                        pass
+
+                    ## Delete game voice channels used for previous matchid
+                    try:
+                        await server.channels[1].delete(reason='Game Over')
+                        await server.channels[2].delete(reason='Game Over')
+                    except:
+                        self.logger.error(f'Problems trying to delet old voice channel')
+                        pass
+
+                    ## Sent an end match command to be sure match will be closed before bot
+                    ## can safely start a new match
+                    try:
+                        valve.rcon.execute((server.server_address, server.server_port), server.RCON_password,'get5_endmatch')
+                    except:
+                        self.logger.error(f'Problems sending get5_endmatch command to server')
+
+                    server.make_available()
+                    self.csgo_servers.remove(server)
+
+
+
         else:
             # Used to decline any requests what doesn't match what our
             # API expects.

@@ -8,13 +8,15 @@ from logging.config import fileConfig
 
 
 class CSGOServer:
-    def __init__(self, identifier: int, server_address: str, server_port: int, server_password: str,
+    def __init__(self, identifier: int, server_address: str, server_alias: str, server_port: int, server_password: str,
                  RCON_password: str):
         fileConfig('logging.conf')
         self.logger = logging.getLogger(f'10man.{__name__}')
 
         self.id: int = identifier
         self.server_address: str = server_address
+        ## add server alias to give user capability to show a public IP even if the API is hosted in the same local network as the server
+        self.server_alias: str = server_alias
         self.server_port: int = server_port
         self.server_password: str = server_password
         self.RCON_password: str = RCON_password

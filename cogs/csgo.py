@@ -367,9 +367,11 @@ class CSGO(commands.Cog):
             'side_type': 'always_knife',
             'players_per_team': int(self.bot.match_size / 2),
             'min_players_to_ready': 1,
-            'spectators': {
-                'players': spectator_steamIDs,
-            },
+            ## if there is there is spectators
+            if (len(spectator_steamIDs) > 0):
+                'spectators': {
+                    'players': spectator_steamIDs,
+                },
             'team1': {
                 'name': team1_name,
                 'tag': 'team1',
@@ -724,19 +726,33 @@ class CSGO(commands.Cog):
         embed = discord.Embed(title=info['server_name'], color=0xf4c14e)
         embed.set_thumbnail(
             url="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/730/69f7ebe2735c366c65c0b33dae00e12dc40edbe4.jpg")
-        embed.add_field(name='Quick Connect',
-                        value=f'steam://connect/{csgo_server.server_address}:{csgo_server.server_port}/{csgo_server.server_password}',
-                        inline=False)
-        embed.add_field(name='Console Connect',
-                        value=f'connect {csgo_server.server_address}:{csgo_server.server_port}; password {csgo_server.server_password}',
-                        inline=False)
+        ## Check if alias is filled otherwise will use server_address as default IP
+        if (csgo_server.server_alias == ""):
+            embed.add_field(name='Quick Connect',
+                            value=f'steam://connect/{csgo_server.server_alias}:{csgo_server.server_port}/{csgo_server.server_password}',
+                            inline=False)
+            embed.add_field(name='Console Connect',
+                            value=f'connect {csgo_server.server_alias}:{csgo_server.server_port}; password {csgo_server.server_password}',
+                            inline=False)
+        else:
+            embed.add_field(name='Quick Connect',
+                            value=f'steam://connect/{csgo_server.server_address}:{csgo_server.server_port}/{csgo_server.server_password}',
+                            inline=False)
+            embed.add_field(name='Console Connect',
+                            value=f'connect {csgo_server.server_address}:{csgo_server.server_port}; password {csgo_server.server_password}',
+                            inline=False)
         embed.add_field(name='Players', value=f'{info["player_count"]}/{info["max_players"]}', inline=True)
         embed.add_field(name='Map', value=info['map'], inline=True)
         gotv = csgo_server.get_gotv()
         if gotv is not None:
-            embed.add_field(name='GOTV',
-                            value=f'connect {csgo_server.server_address}:{gotv}',
-                            inline=False)
+            if (csgo_server.server_alias == ""):
+                embed.add_field(name='GOTV',
+                                value=f'connect {csgo_server.server_alias}:{gotv}',
+                                inline=False)
+            else:
+                embed.add_field(name='GOTV',
+                                value=f'connect {csgo_server.server_address}:{gotv}',
+                                inline=False)
         return embed
 
     @commands.command(aliases=['maps'], help='Resets the map pool to be whatever maps are specified'
