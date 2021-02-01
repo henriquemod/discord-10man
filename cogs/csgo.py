@@ -358,37 +358,60 @@ class CSGO(commands.Cog):
 
         match_id = f'PUG_{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}'
 
-        match_config = {
-            'matchid': match_id,
-            'num_maps': 1,
-            'maplist': map_list,
-            'skip_veto': True,
-            'veto_first': 'team1',
-            'side_type': 'always_knife',
-            'players_per_team': int(self.bot.match_size / 2),
-            'min_players_to_ready': 1,
-            ## if there is there is spectators
-            if (len(spectator_steamIDs) > 0):
+        ## if there is there is spectators
+        if (len(spectator_steamIDs) > 0):
+            match_config = {
+                'matchid': match_id,
+                'num_maps': 1,
+                'maplist': map_list,
+                'skip_veto': True,
+                'veto_first': 'team1',
+                'side_type': 'always_knife',
+                'players_per_team': int(self.bot.match_size / 2),
+                'min_players_to_ready': 1,
                 'spectators': {
                     'players': spectator_steamIDs,
                 },
-            'team1': {
-                'name': team1_name,
-                'tag': 'team1',
-                'flag': team1_country,
-                'players': team1_steamIDs
-            },
-            'team2': {
-                'name': team2_name,
-                'tag': 'team2',
-                'flag': team2_country,
-                'players': team2_steamIDs
-            },
-            'cvars': {
-                'get5_event_api_url': f'http://{bot_ip}:{self.bot.web_server.port}/',
-                'get5_print_damage': 1,
+                'team1': {
+                    'name': team1_name,
+                    'flag': team1_country,
+                    'players': team1_steamIDs
+                },
+                'team2': {
+                    'name': team2_name,
+                    'flag': team2_country,
+                    'players': team2_steamIDs
+                },
+                'cvars': {
+                    'get5_event_api_url': f'http://{bot_ip}:{self.bot.web_server.port}/',
+                    'get5_print_damage': 1,
+                }
             }
-        }
+        else:
+            match_config = {
+                'matchid': match_id,
+                'num_maps': 1,
+                'maplist': map_list,
+                'skip_veto': True,
+                'veto_first': 'team1',
+                'side_type': 'always_knife',
+                'players_per_team': int(self.bot.match_size / 2),
+                'min_players_to_ready': 1,
+                'team1': {
+                    'name': team1_name,
+                    'flag': team1_country,
+                    'players': team1_steamIDs
+                },
+                'team2': {
+                    'name': team2_name,
+                    'flag': team2_country,
+                    'players': team2_steamIDs
+                },
+                'cvars': {
+                    'get5_event_api_url': f'http://{bot_ip}:{self.bot.web_server.port}/',
+                    'get5_print_damage': 1,
+                }
+            }
 
         self.logger.debug(f'Match Config =\n {pprint.pformat(match_config)}')
 
@@ -398,10 +421,6 @@ class CSGO(commands.Cog):
         await ctx.send('If you are coaching, once you join the server, type .coach')
         loading_map_message = await ctx.send('Server is being configured')
         await asyncio.sleep(0.3)
-        get5_trigger = valve.rcon.execute((csgo_server.server_address, csgo_server.server_port),
-                                          csgo_server.RCON_password,
-                                          'exec triggers/get5')
-        self.logger.debug(f'Executing get5_trigger (something for Yannicks Server) \n {get5_trigger}')
         await asyncio.sleep(10)
         await loading_map_message.delete()
         load_match = valve.rcon.execute((csgo_server.server_address, csgo_server.server_port),
@@ -446,12 +465,12 @@ class CSGO(commands.Cog):
         for team1_player in team1:
             team1_text += f'<@{team1_player.id}>'
             if team1_player is team1_captain:
-                team1_text += ' 👑'
+                team1_text += ' <:jaguaresgaming:769251490502017024>'
             team1_text += '\n'
         for team2_player in team2:
             team2_text += f'<@{team2_player.id}>'
             if team2_player is team2_captain:
-                team2_text += ' 👑'
+                team2_text += ' <:jaguaresgaming:769251490502017024>'
             team2_text += '\n'
 
         embed = discord.Embed()
@@ -727,7 +746,7 @@ class CSGO(commands.Cog):
         embed.set_thumbnail(
             url="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/730/69f7ebe2735c366c65c0b33dae00e12dc40edbe4.jpg")
         ## Check if alias is filled otherwise will use server_address as default IP
-        if (csgo_server.server_alias == ""):
+        if csgo_server.server_alias:
             embed.add_field(name='Quick Connect',
                             value=f'steam://connect/{csgo_server.server_alias}:{csgo_server.server_port}/{csgo_server.server_password}',
                             inline=False)
@@ -745,7 +764,7 @@ class CSGO(commands.Cog):
         embed.add_field(name='Map', value=info['map'], inline=True)
         gotv = csgo_server.get_gotv()
         if gotv is not None:
-            if (csgo_server.server_alias == ""):
+            if csgo_server.server_alias:
                 embed.add_field(name='GOTV',
                                 value=f'connect {csgo_server.server_alias}:{gotv}',
                                 inline=False)

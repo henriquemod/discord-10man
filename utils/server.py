@@ -192,11 +192,12 @@ class WebServer:
                         pass
 
                     ## Sent an end match command to be sure match will be closed before bot
-                    ## can safely start a new match
+                    ## can safely start a new match and then just change the map
                     try:
                         valve.rcon.execute((server.server_address, server.server_port), server.RCON_password,'get5_endmatch')
+                        valve.rcon.execute((server.server_address, server.server_port), server.RCON_password,'map de_mirage')
                     except:
-                        self.logger.error(f'Problems sending get5_endmatch command to server')
+                        self.logger.error(f'Problems sending get5_endmatch command to server and changing map')
 
                     server.make_available()
                     self.csgo_servers.remove(server)
